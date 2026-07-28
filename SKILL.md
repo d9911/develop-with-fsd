@@ -14,7 +14,8 @@ Develop within the repository's actual architecture. Treat FSD as ownership and 
 3. If a code knowledge graph exists, query it before broad source browsing.
 4. Prefer the repository's documented FSD variant over generic conventions.
 5. If the repository has no FSD contract, read [references/fsd-architecture.md](references/fsd-architecture.md) and use its conservative defaults.
-6. State any unresolved ownership choice before making a change that depends on it.
+6. When creating or planning a new Next.js App Router project with TypeScript, FSD, Redux Toolkit, and i18n, read the complete user-supplied [Next.js project structure template](references/next-project-template.md). Treat optional folders as optional and create them only when the project needs them.
+7. State any unresolved ownership choice before making a change that depends on it.
 
 Never claim that a convention is enforced unless a lint rule, test, or other executable check verifies it.
 
@@ -103,4 +104,3 @@ Before completion, confirm:
 - client boundaries and global state are justified;
 - no speculative folders or abstractions were added;
 - tests and documentation match the actual architecture.
-

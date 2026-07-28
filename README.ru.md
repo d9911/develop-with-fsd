@@ -42,7 +42,8 @@ develop-with-fsd/
 ├── agents/
 │   └── openai.yaml
 └── references/
-    └── fsd-architecture.md
+    ├── fsd-architecture.md
+    └── next-project-template.md
 ```
 
 `README.md` и `README.ru.md` документируют проект, но не требуются для выполнения skill.
@@ -96,4 +97,5 @@ Skill не утверждает, что правило контролирует�
 
 - [`SKILL.md`](SKILL.md) — исполняемые инструкции для Codex.
 - [`references/fsd-architecture.md`](references/fsd-architecture.md) — консервативные правила для репозиториев без собственного FSD-контракта.
+- [`references/next-project-template.md`](references/next-project-template.md) — полная предоставленная пользователем структура проекта на Next.js App Router, TypeScript, FSD, Redux Toolkit и i18n.
 - [`agents/openai.yaml`](agents/openai.yaml) — метаданные интерфейса Codex.
