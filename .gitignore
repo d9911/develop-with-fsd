@@ -1,0 +1,55 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node.js
+node_modules/
+.npm/
+.yarn/cache/
+.pnpm-store/
+
+# Logs, coverage, and build output
+*.log
+coverage/
+dist/
+build/
+.next/
+
+# Temporary files
+.cache/
+.tmp/
+tmp/
+*.tmp
+*.bak
+
+# Local Codex and graph output
+.codex/
+graphify-out/
