@@ -1,31 +1,56 @@
-# Conservative FSD architecture defaults
+# FSD version, framework mapping, and local variants
 
 Use this reference only when the repository does not already define a conflicting architecture contract.
+
+## Identify the variant first
+
+Record `FSD version + source | framework/router | logical layer → physical path | local extensions/checks`. If no version is declared, say it is not established; do not guess from the tree.
+
+FSD v2.1 uses a pages-first decomposition model; v2.0 projects remain valid according to the migration guide. App and Pages are distinct logical layers. Next.js `app/**/page.tsx` is a route file, and Next.js `pages/` is a router folder; neither name alone determines an FSD layer. The official Next.js integration guide maps logical layers to `_app` and `_pages` to avoid collisions. Keep a verified existing mapping during ordinary work.
+
+A custom `app → processes → widgets → features → entities → shared` contract must be labelled as a project variant, not a numbered standard version. Processes is deprecated in standard FSD and does not replace Pages by definition. The table below lists possible owners across variants, not a skeleton to instantiate together.
+
+Sources: [v2.1 migration](https://feature-sliced.design/docs/guides/migration/from-v2-0), [Next.js mapping](https://feature-sliced.design/docs/guides/tech/with-nextjs).
 
 ## Layer decisions
 
 | Layer | Owns | Must not own |
 |---|---|---|
-| `app` | routes, layouts, metadata, route handlers, thin composition | reusable UI, domain models, large forms and editors |
-| `processes` | store assembly, providers, router, i18n, application-wide processes | entity-specific business rules, reusable visual blocks |
+| `app` | application assembly, providers, router configuration, global styles; physical router files follow the explicit framework mapping | page-local implementation and reusable domain models |
+| `pages` | screen-owned UI, composition, data access and behavior when used | unrelated cross-page behavior |
+| `processes` (only a verified local extension) | responsibilities explicitly assigned by the local contract | entity-specific business rules, reusable visual blocks |
 | `widgets` | independent screen blocks and substantial page composition | generic primitives, entity source-of-truth models |
 | `features` | user actions and business scenarios | complete pages, application infrastructure |
 | `entities` | domain concepts, types, rules, selectors, small entity UI | URL knowledge, page layout, cross-entity scenarios |
-| `shared` | domain-agnostic UI, base API, utilities, hooks, config, assets | business words, routes, features, widgets |
+| `shared` | domain-agnostic UI, base API, utilities, hooks, config, assets | domain business rules and higher-layer dependencies |
 
-The `processes` layer is an optional project extension. Do not introduce it into a repository that intentionally omits it.
+Standard FSD uses `app → pages → widgets → features → entities → shared`. The standard deprecates `processes`; keep an established project extension during ordinary work and do not migrate automatically. In Next.js App Router, follow the existing screen owner without accidentally introducing a Pages Router.
 
 ## Placement questions
 
 Ask in order:
 
-1. Is it required by the routing framework? Use `app`.
-2. Does it assemble or configure the entire running application? Use `processes` if available.
-3. Is it a complete, independently meaningful UI block? Use `widgets`.
+1. Is it required by the routing framework? Use the selected router's required path; do not infer its FSD owner from the directory name.
+2. Does it assemble the application? Use `app`, or the existing documented `processes` owner.
+3. Is it screen-owned composition? Use the existing page owner; reusable independent UI blocks may belong in `widgets`.
 4. Is it a user action expressed as a verb? Use `features`.
 5. Is it knowledge about a business noun? Use `entities`.
 6. Is it useful without knowing the product domain? Use `shared`.
 7. If none fits, keep it local and clarify its responsibility before creating a new slice.
+
+## Type placement
+
+Denis's mandatory TypeScript/Next.js project convention is defined in [the skill](../SKILL.md#keep-typescript-contracts-inside-their-owner); it is not a requirement of an FSD version. Named types/interfaces belong in `types.ts` or `types/` within their owner, alongside that owner's other files:
+
+| Contract | Example location |
+|---|---|
+| Domain entity | `entities/project/model/types.ts` |
+| User scenario | `features/create-project/model/types.ts` |
+| Component props | `features/create-project/ui/types.ts` or `ui/CreateProjectForm/types.ts` |
+| Several distinct local contracts | `ui/CreateProjectForm/types/props.ts`, `types/state.ts` within the same component directory |
+| Domain-independent utility type | Existing shared library's `types.ts`, or `shared/types/` if the project uses it |
+
+Choose one appropriate local form; do not scaffold every example. Import shared contracts from their owner using `import type`, and expose supported cross-slice contracts with `export type` in that owner's public API. Do not create a global collection of business types. Timepost route entrypoints obtain contracts through their component/scenario API, without separate files in `app`/`pages`. Inference, inline annotations and generic parameters remain inline; runtime schemas and required/generated framework declarations retain their proper locations.
 
 ## State placement
 
@@ -112,3 +137,9 @@ A skill guides decisions but cannot enforce architecture by itself. For durable 
 - CI steps that run these checks.
 
 Introduce enforcement only when requested or already part of the repository contract.
+
+## Review boundaries
+
+Check same-layer cross-slice dependencies separately. Explicit entity relationships may use `@x`; App and Shared contain segments that may import each other. Business-themed UI/assets and generic route constants alone are not business logic. Read the exact baseline policy: passing may establish equality or only prevent debt growth. Neither import direction nor a barrel proves SOLID. See [solid-audit.md](solid-audit.md) and [architecture-composition.md](architecture-composition.md).
+
+Primary references checked during this audit: [FSD layers](https://feature-sliced.design/docs/reference/layers), [public APIs](https://feature-sliced.design/docs/reference/public-api).

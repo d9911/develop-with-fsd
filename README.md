@@ -8,9 +8,10 @@ The skill is designed primarily for React, Next.js App Router, TypeScript, Redux
 
 ## What it does
 
+- applies SOLID and OOP during design, implementation, refactoring, and review; checks DRY, KISS/YAGNI, cohesion, coupling, and state ownership without requiring classes;
 - reads the repository's `AGENTS.md` and architecture documentation first;
 - inspects existing slices, aliases, lint rules, tests, and knowledge graphs;
-- classifies code as `app`, `processes`, `widgets`, `features`, `entities`, or `shared`;
+- classifies code as `app`, `pages`, `widgets`, `features`, `entities`, or `shared`, preserving an existing `processes` extension;
 - keeps route files focused on routing and composition;
 - preserves downward dependency flow and slice public APIs;
 - avoids empty folders and abstractions created for hypothetical reuse;
@@ -18,13 +19,9 @@ The skill is designed primarily for React, Next.js App Router, TypeScript, Redux
 - runs relevant tests, type checks, lint, architecture checks, and builds;
 - reports which verification commands actually ran.
 
-Default extended dependency direction:
+FSD v2.1 logical layers: `App → Pages → Widgets → Features → Entities → Shared`. App and Pages have distinct roles. Next.js router folders and route files are mapped separately.
 
-```text
-app → processes → widgets → features → entities → shared
-```
-
-The `processes` layer is optional. The skill does not introduce it when a repository intentionally uses a different FSD variant.
+The bundled template is a custom App Router/processes variant, not a universal FSD skeleton. Record the declared version and source first; when absent, report “version not established”. See [variant selection](references/fsd-architecture.md).
 
 ## Installation
 
@@ -42,6 +39,8 @@ develop-with-fsd/
 ├── agents/
 │   └── openai.yaml
 └── references/
+    ├── architecture-composition.md
+    ├── solid-audit.md
     ├── fsd-architecture.md
     └── next-project-template.md
 ```
@@ -70,6 +69,14 @@ $develop-with-fsd decide where this Redux state should live
 $develop-with-fsd split this large TSX component without changing behavior
 ```
 
+```text
+$develop-with-fsd audit SOLID, OOP, DRY and state ownership; report evidence per principle
+```
+
+```text
+$develop-with-fsd refactor this workflow using SOLID while preserving behavior
+```
+
 The skill may also be selected implicitly when Codex recognizes a matching architecture or FSD task.
 
 ## Decision model
@@ -78,8 +85,9 @@ The skill asks what owns each responsibility and places it in the lowest valid l
 
 | Layer       | Responsibility                                                           |
 | ----------- | ------------------------------------------------------------------------ |
-| `app`       | Routes, layouts, metadata, route handlers, and thin composition          |
-| `processes` | Store assembly, providers, router, i18n, and app-wide processes          |
+| `app` | Logical application assembly; framework router paths follow the selected mapping |
+| `pages` | Screen-owned UI and behavior when used |
+| `processes` | Existing documented project extension for app-wide processes |
 | `widgets`   | Independent screen blocks and substantial page composition               |
 | `features`  | User actions with business value                                         |
 | `entities`  | Domain data, rules, types, selectors, and entity UI                      |
@@ -99,3 +107,12 @@ The skill never claims that a convention is enforced unless an executable reposi
 - [`references/fsd-architecture.md`](references/fsd-architecture.md) — conservative defaults for repositories without their own FSD contract.
 - [`references/next-project-template.md`](references/next-project-template.md) — complete user-supplied Next.js App Router, TypeScript, FSD, Redux Toolkit, and i18n project structure.
 - [`agents/openai.yaml`](agents/openai.yaml) — Codex interface metadata.
+
+## Architecture / Архитектура
+
+Архитектура — набор модулей, компонентов и связей между ними. Architecture is the set of modules, components, and relationships between them.
+
+- [Architecture and decomposition](references/architecture-composition.md): responsibilities, contracts, state ownership, functions/hooks/components/adapters/classes.
+- [OOP and SOLID audit](references/solid-audit.md): criteria, evidence, baseline exceptions, and limits of verification.
+
+The existing project contract takes precedence; these criteria do not require class migration.

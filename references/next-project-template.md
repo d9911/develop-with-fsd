@@ -1,10 +1,20 @@
-next-project/ # Универсальный шаблон:  Next.js App Router + TypeScript + FSD + Redux Toolkit + i18n.
+# Шаблон конкретного проектного варианта
+
+Это предоставленный проектный шаблон с расширением `processes`, а не универсальный стандарт FSD. Номер версии FSD в исходном шаблоне не установлен. Применять только при явном выборе этого варианта; существующие проекты автоматически не перестраивать.
+
+`src/app/**/page.tsx` здесь — маршруты Next.js App Router. Отсутствие отдельного слоя FSD Pages — локальное решение. App Router допускает отдельный слой экранов с безопасным именем, например `_pages`; логические App и Pages в FSD не являются альтернативными роутерами. `processes` не синоним Pages.
+
+Источники: [FSD и Next.js](https://feature-sliced.design/docs/guides/tech/with-nextjs), [слои FSD](https://feature-sliced.design/docs/reference/layers). Ниже сохранён выбранный проектный вариант, а не инструкция смешивать разные схемы.
+
+Правило типизации Дениса: именованные `type`/`interface`, включая props, хранить в `types.ts` или `types/` внутри модуля/компонента-владельца, рядом с его остальными файлами. Общего хранилища бизнес-типов проекта нет. Файлы маршрутов получают контракты через публичный API владельца; исключения для вывода типов и служебных деклараций — в [SKILL.md](../SKILL.md#keep-typescript-contracts-inside-their-owner).
+
+next-project/ # Проектный вариант: Next.js App Router + processes + TypeScript + Redux Toolkit + i18n.
 │   # app → processes → widgets → features → entities → shared
 │   #
 │   # ВАЖНО:
 │   # ├── src/app      — только маршрутизация и специальные файлы Next.js;
 │   # ├── store        — в src/processes/store, а не в src/app;
-│   # ├── pages        — не создаём, потому что используется App Router;
+│   # ├── pages        — отдельный FSD-слой отсутствует по решению этого варианта, не из-за запрета App Router;
 │   # ├── shared       — не знает о бизнес-логике;
 │   # └── папки создаём только тогда, когда они реально нужны проекту.
 │
@@ -562,7 +572,7 @@ next-project/ # Универсальный шаблон:  Next.js App Router + T
 │       │   └── index.ts
 │       │
 │       ├── constants/                         # Общие константы без бизнеса
-│       ├── types/                             # Общие utility types
+│       ├── types/                             # Только domain-agnostic utility types; бизнес-типы у владельцев
 │       ├── styles/
 │       │   ├── reset.scss
 │       │   ├── variables.scss

@@ -1,4 +1,4 @@
 interface:
   display_name: "Develop with FSD"
-  short_description: "Guide repository development with FSD"
-  default_prompt: "Use $develop-with-fsd to implement this change within the repository architecture."
+  short_description: "Design, refactor, and audit frontend FSD, SOLID, and OOP"
+  default_prompt: "Use $develop-with-fsd for this frontend task. Preserve the repository contract, distinguish review from implementation/refactoring, and apply SOLID, OOP, DRY, KISS/YAGNI and state ownership where relevant. Preserve observable behavior, report evidence per principle, and do not require classes or speculative abstractions."

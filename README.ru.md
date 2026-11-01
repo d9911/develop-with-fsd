@@ -6,11 +6,11 @@
 
 Skill рассчитан прежде всего на React, Next.js App Router, TypeScript, Redux Toolkit и другие модульные frontend-проекты. Правила конкретного репозитория всегда имеют приоритет над универсальными рекомендациями.
 
-## Что делает skill
-
+## Что делает skill=-0
+- применяет SOLID и ООП при проектировании, реализации, рефакторинге и аудите; проверяет DRY, KISS/YAGNI, связность, зависимости и владельцев состояния без обязательного перехода на классы;
 - сначала читает `AGENTS.md` и архитектурную документацию репозитория;
 - проверяет существующие slices, aliases, lint-правила, тесты и граф знаний;
-- распределяет код между `app`, `processes`, `widgets`, `features`, `entities` и `shared`;
+- распределяет код между `app`, `pages`, `widgets`, `features`, `entities` и `shared`, сохраняя существующее расширение `processes`;
 - оставляет route-файлы ответственными за маршрутизацию и композицию;
 - сохраняет нисходящее направление зависимостей и публичные API slices;
 - не создаёт пустые папки и абстракции для гипотетического переиспользования;
@@ -18,13 +18,9 @@ Skill рассчитан прежде всего на React, Next.js App Router,
 - запускает подходящие тесты, typecheck, lint, архитектурные проверки и сборку;
 - сообщает, какие проверки действительно были выполнены.
 
-Расширенное направление зависимостей по умолчанию:
+Логические слои FSD v2.1: `App → Pages → Widgets → Features → Entities → Shared`. App и Pages имеют разные роли. Каталоги роутеров и route-файлы Next.js сопоставляются со слоями отдельно.
 
-```text
-app → processes → widgets → features → entities → shared
-```
-
-Слой `processes` необязателен. Skill не добавляет его в проект, который осознанно использует другой вариант FSD.
+Вложенный шаблон — проектный вариант App Router/processes, а не универсальный скелет FSD. Сначала фиксируются заявленная версия и источник; при их отсутствии — «версия не установлена». См. [выбор варианта](references/fsd-architecture.md).
 
 ## Установка
 
@@ -42,6 +38,8 @@ develop-with-fsd/
 ├── agents/
 │   └── openai.yaml
 └── references/
+    ├── architecture-composition.md
+    ├── solid-audit.md
     ├── fsd-architecture.md
     └── next-project-template.md
 ```
@@ -70,6 +68,14 @@ $develop-with-fsd определи, где должно храниться эт�
 $develop-with-fsd раздели этот большой TSX-компонент без изменения поведения
 ```
 
+```text
+$develop-with-fsd проверь SOLID, ООП, DRY и владельцев состояния; приведи доказательства по каждому принципу
+```
+
+```text
+$develop-with-fsd выполни рефакторинг этого сценария по SOLID с сохранением поведения
+```
+
 Skill также может выбираться автоматически, если Codex распознает подходящую архитектурную или FSD-задачу.
 
 ## Модель принятия решений
@@ -78,8 +84,9 @@ Skill определяет владельца каждой ответствен�
 
 | Слой        | Ответственность                                                       |
 | ----------- | --------------------------------------------------------------------- |
-| `app`       | Маршруты, layouts, metadata, route handlers и тонкая композиция       |
-| `processes` | Сборка store, providers, router, i18n и процессы всего приложения     |
+| `app` | Логическая сборка приложения; пути файлов роутера определяются выбранным сопоставлением |
+| `pages` | UI и поведение экрана, если слой используется |
+| `processes` | Существующее документированное расширение проекта |
 | `widgets`   | Самостоятельные блоки экрана и значительная композиция страницы       |
 | `features`  | Действия пользователя с бизнес-ценностью                              |
 | `entities`  | Данные, правила, типы, selectors и UI бизнес-сущностей                |
@@ -99,3 +106,12 @@ Skill не утверждает, что правило контролирует�
 - [`references/fsd-architecture.md`](references/fsd-architecture.md) — консервативные правила для репозиториев без собственного FSD-контракта.
 - [`references/next-project-template.md`](references/next-project-template.md) — полная предоставленная пользователем структура проекта на Next.js App Router, TypeScript, FSD, Redux Toolkit и i18n.
 - [`agents/openai.yaml`](agents/openai.yaml) — метаданные интерфейса Codex.
+
+## Architecture / Архитектура
+
+Архитектура — набор модулей, компонентов и связей между ними. Architecture is the set of modules, components, and relationships between them.
+
+- [Architecture and decomposition](references/architecture-composition.md): responsibilities, contracts, state ownership, functions/hooks/components/adapters/classes.
+- [OOP and SOLID audit](references/solid-audit.md): criteria, evidence, baseline exceptions, and limits of verification.
+
+The existing project contract takes precedence; these criteria do not require class migration.
