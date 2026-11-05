@@ -8,6 +8,8 @@
 
 Правило типизации Дениса: именованные `type`/`interface`, включая props, хранить в `types.ts` или `types/` внутри модуля/компонента-владельца, рядом с его остальными файлами. Общего хранилища бизнес-типов проекта нет. Файлы маршрутов получают контракты через публичный API владельца; исключения для вывода типов и служебных деклараций — в [SKILL.md](../SKILL.md#keep-typescript-contracts-inside-their-owner).
 
+Обязательное правило констант Дениса: общие технические значения хранятся в `src/shared/config/constants.ts`, связанные таблицы/параметры — в отдельных файлах `shared/config/`. Предметные константы принадлежат `config/constants.ts` своего entity/feature/widget. Константы и именованные типы не смешиваются: для типов конфигурации при необходимости есть локальный `config/types.ts`, для props — `ui/types.ts`. Пустые файлы не создаются. Вычисления внутри функций, изменяемое состояние и обязательные literal-экспорты Next.js остаются на месте. См. [полное правило](../SKILL.md#keep-constants-and-types-separate).
+
 next-project/ # Проектный вариант: Next.js App Router + processes + TypeScript + Redux Toolkit + i18n.
 │   # app → processes → widgets → features → entities → shared
 │   #
@@ -310,7 +312,7 @@ next-project/ # Проектный вариант: Next.js App Router + processe
 │   │   │   └── index.ts
 │   │   │
 │   │   ├── i18n/
-│   │   │   ├── config.ts                     # defaultLocale/supportedLocales
+│   │   │   ├── config.ts                     # Настройка i18n; locale импортируются из shared/config/constants.ts
 │   │   │   ├── types.ts                      # Locale/Dictionary/TranslationKey
 │   │   │   ├── server.ts                     # Получение словаря в Server Component
 │   │   │   ├── client.ts                     # Client translation adapter
@@ -565,13 +567,14 @@ next-project/ # Проектный вариант: Next.js App Router + processe
 │       │   ├── use-mounted.ts
 │       │   └── use-event-listener.ts
 │       │
-│       ├── config/
+│       ├── config/                           # Общие значения отдельно от типов
+│       │   ├── constants.ts                   # Общие технические константы
+│       │   ├── types.ts                       # Типы конфигурации, только если есть
 │       │   ├── env.client.ts                  # Только NEXT_PUBLIC_*
 │       │   ├── env.server.ts                  # Server-only env и secrets
 │       │   ├── application.ts                 # Универсальная конфигурация
 │       │   └── index.ts
 │       │
-│       ├── constants/                         # Общие константы без бизнеса
 │       ├── types/                             # Только domain-agnostic utility types; бизнес-типы у владельцев
 │       ├── styles/
 │       │   ├── reset.scss
@@ -646,8 +649,11 @@ next-project/ # Проектный вариант: Next.js App Router + processe
 │   ├── server/                              # Server Actions/server-only код
 │   ├── lib/                                 # Внутренние функции feature
 │   ├── config/                              # Локальная конфигурация
+│   │   ├── constants.ts                     # Константы владельца, если есть
+│   │   └── types.ts                         # Типы config, если есть
 │   └── index.ts                             # Публичный API
 │
+│   # При именованных props нужен ui/types.ts; при константах — config/constants.ts.
 │   # Необязательно создавать все segments сразу.
 │   # Если feature содержит только один UI-компонент:
 │   #

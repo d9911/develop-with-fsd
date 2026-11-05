@@ -1,4 +1,4 @@
 interface:
   display_name: "Develop with FSD"
   short_description: "Design, refactor, and audit frontend FSD, SOLID, and OOP"
-  default_prompt: "Use $develop-with-fsd for this frontend task. Preserve the repository contract, distinguish review from implementation/refactoring, and apply SOLID, OOP, DRY, KISS/YAGNI and state ownership where relevant. Preserve observable behavior, report evidence per principle, and do not require classes or speculative abstractions."
+  default_prompt: "Use $develop-with-fsd for this frontend task. Preserve the repository contract, distinguish review from implementation/refactoring, and apply SOLID, OOP, DRY, KISS/YAGNI and state ownership where relevant. Keep named static constants in the owning config (shared/config for shared technical values) and named contracts in separate local types.ts, without empty files. Preserve observable behavior, report evidence per principle, and do not require classes or speculative abstractions."

@@ -38,6 +38,14 @@ Ask in order:
 6. Is it useful without knowing the product domain? Use `shared`.
 7. If none fits, keep it local and clarify its responsibility before creating a new slice.
 
+## Constant placement
+
+[The mandatory constants/types convention](../SKILL.md#keep-constants-and-types-separate) applies to new and touched modules. Shared technical constants go in `shared/config/constants.ts`; cohesive shared tables/options can use `shared/config/icons.ts` or `formatting.ts`. Entity, feature and widget constants go in their own `config/constants.ts`. Their named configuration contracts go in a separate `config/types.ts` when needed. Props and domain types keep their `ui/types.ts` / `model/types.ts` owners.
+
+A static `POWER_TAG` belongs to `entities/gtu/config/constants.ts`; a reusable `TIME_ZONE` belongs to `shared/config/constants.ts`. Neither belongs beside JSX or inside a type file. Do not move a domain tag into Shared just to put every constant in one folder.
+
+Function-local `filteredRows`, callback closures, initial-state factories, mutable Maps and cached formatter instances belong with their behavior/lifecycle. A Next.js route's literal `export const dynamic = 'force-dynamic'` stays in its framework entrypoint. Server env readers remain server-only. This rule does not create empty files or turn every expression literal into a constant.
+
 ## Type placement
 
 Denis's mandatory TypeScript/Next.js project convention is defined in [the skill](../SKILL.md#keep-typescript-contracts-inside-their-owner); it is not a requirement of an FSD version. Named types/interfaces belong in `types.ts` or `types/` within their owner, alongside that owner's other files:

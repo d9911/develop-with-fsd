@@ -12,6 +12,7 @@ The skill is designed primarily for React, Next.js App Router, TypeScript, Redux
 - reads the repository's `AGENTS.md` and architecture documentation first;
 - inspects existing slices, aliases, lint rules, tests, and knowledge graphs;
 - classifies code as `app`, `pages`, `widgets`, `features`, `entities`, or `shared`, preserving an existing `processes` extension;
+- requires constants in the owning `config` (`shared/config` for shared technical values) and named contracts in separate local `types.ts`; creates these files only when needed;
 - keeps route files focused on routing and composition;
 - preserves downward dependency flow and slice public APIs;
 - avoids empty folders and abstractions created for hypothetical reuse;

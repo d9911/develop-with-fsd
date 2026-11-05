@@ -1,6 +1,6 @@
 ---
 name: develop-with-fsd
-description: Use when planning, changing, or reviewing frontend code with Feature-Sliced Design, or applying OOP, SOLID, DRY, KISS, YAGNI, responsibility, coupling, public APIs, and dependency boundaries in React, Next.js, TypeScript, or Redux Toolkit projects.
+description: Use when planning, changing, or reviewing frontend code with Feature-Sliced Design, constants/type placement, or applying OOP, SOLID, DRY, KISS, YAGNI, responsibility, coupling, public APIs, and dependency boundaries in React, Next.js, TypeScript, or Redux Toolkit projects.
 ---
 
 # Develop with FSD
@@ -92,6 +92,42 @@ Use pure functions for deterministic rules, hooks for React state/effect coordin
 
 Keep production TSX focused. Follow repository limits when present; otherwise treat 400 lines as a review signal and avoid exceeding 500 lines without a documented generated-file, test, or report exception. A line count alone does not establish an SRP violation: identify independent reasons to change. Split by ownership or behavior, not by arbitrary line ranges.
 
+## Keep constants and types separate
+
+Mandatory Denis convention for frontend projects, including React/Next.js: **named static constants and named TypeScript contracts MUST have separate files**. Apply it when creating or changing a module. A requested project-wide migration includes its callers, public exports and existing checks.
+
+| Definition | Required owner and location |
+|---|---|
+| Domain-independent shared values: locale, time zone, units of time, refresh settings | `shared/config/constants.ts` |
+| Cohesive shared lookup/options: icons, date formats | `shared/config/icons.ts`, `shared/config/formatting.ts` when a separate file is useful |
+| Entity tags, metric definitions, plans, domain thresholds | `entities/<slice>/config/constants.ts` |
+| Feature/widget presets, tabs, navigation, validation limits | `<layer>/<slice>/config/constants.ts` |
+| Types for that configuration, if named contracts exist | Its local `config/types.ts` |
+| Props, domain and scenario contracts | Their owning `ui/types.ts` or `model/types.ts`, as specified below |
+| Secret or environment-backed server configuration | Separate server-only config module; never export secrets through client/shared constant barrels |
+
+Before implementation, classify each named module-level value as static configuration, behavior, derived service or mutable state. Move static tables, presets, defaults and options out of implementation `.ts`/`.tsx` and out of `types.ts`. Import one authoritative definition; update consumers and public exports. Keep business constants inside their slice: `shared/config` is not a global business-constants bucket.
+
+The rule is about ownership, not the `const` keyword. Function-local calculations, closures, initial-state factories, mutable caches/stores and derived service instances remain with their behavior and lifecycle. Do not replace every literal or inferred value with an artificial alias. Do not create empty `config` or `types` files.
+
+Framework/tooling entrypoints keep required exports and native file locations. For example, Next.js `dynamic`, `runtime` and `revalidate` retain literal values where static analysis requires them; metadata payloads may come from config. Preserve server/client boundaries and observable behavior.
+
+```text
+src/
+├── shared/config/
+│   ├── constants.ts        # shared static values
+│   └── types.ts            # only when config owns named types
+├── entities/gtu/
+│   ├── config/constants.ts # GTU tags and metrics
+│   └── model/types.ts      # GTU contracts
+└── widgets/dashboard/
+    ├── config/constants.ts # dashboard presets
+    ├── ui/Dashboard.tsx
+    └── ui/types.ts         # named props, if present
+```
+
+For a review, report misplaced definitions. For authorized edits, move them and verify imports/types; do not declare the convention enforced without an executable check. See [placement examples](references/fsd-architecture.md#constant-placement).
+
 ## Keep TypeScript contracts inside their owner
 
 Mandatory project convention requested by Denis for TypeScript/Next.js: place named `type`/`interface` declarations, including component props, in `types.ts` or a `types/` directory **inside the owning component/module**, alongside its other implementation files. Do not leave these declarations scattered through implementation `.ts`/`.tsx` files or in loose files beside the project. This is a project convention, not a universal FSD or Next.js requirement.
@@ -101,7 +137,7 @@ Mandatory project convention requested by Denis for TypeScript/Next.js: place na
 - Do not collect business types in a project-wide `types/` or `shared/types`. Only genuinely domain-independent utility types may have a shared owner.
 - Respect the local route contract: in Timepost, `app`/`pages` entrypoints do not get separate type files; they consume contracts through the entry component/scenario's public API. Keep URL `params`/`searchParams` distinct from display props and preserve their framework-required async shape.
 - Use `import type` and `export type`; cross-slice consumers use the owner's public API without bypassing layer rules.
-- Inferred types, inline annotations, and generic parameters do not require artificial named declarations. Runtime schemas/values stay with their behavior; named types inferred from schemas belong in the owner's type file, referencing the schema through a type-only import. Keep required/generated framework declaration files in their required locations.
+- Inferred types, inline annotations, and generic parameters do not require artificial named declarations. Runtime schemas and behavior stay with their owner; static values follow the config rule above; named types inferred from schemas belong in the owner's type file, referencing the schema through a type-only import. Keep required/generated framework declaration files in their required locations.
 
 Apply this rule to touched code; do not perform a project-wide type migration without a request. See [type placement examples](references/fsd-architecture.md#type-placement).
 
@@ -133,6 +169,7 @@ Before completion, confirm:
 - every changed responsibility has one clear owner;
 - dependency direction remains valid;
 - cross-slice imports use the intended public API;
+- named static values live in the owning `config` and stay separate from type declarations; shared values use `shared/config`;
 - named TypeScript contracts live in the owner's `types.ts`/`types/`, with route/tooling exceptions respected;
 - `shared` contains no domain business rules or higher-layer dependencies;
 - route files contain composition rather than feature implementation;
